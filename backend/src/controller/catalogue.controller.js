@@ -1,5 +1,6 @@
 import { db } from '../db/index.js';
 import { items } from '../models/catalogue.model.js';
+import { eq } from 'drizzle-orm';
 
 export const createItems = async ( req,res,next ) => {
     try {
@@ -22,7 +23,16 @@ export const updateItems = async ( req,res,next ) => {
     try {
         const data = { ...req.body }
         const id = { ...req.params }
-        
+        const existing = await db.select().from(items).where(eq(items.id, id) );
+        const updates = {updatedAt: new Date() };
+        if ( !existing ) return res.status(404).json({ message:"Item not found!" });
+        if ( data.title !==undefined) updates.title=data.title;
+        if ( data.category !==undefined) updates.category=data.category;
+        if ( data.description !==undefined) updates.description=data.description;
+
+        const [updated] = await db.update(items).set(updates).where(eq(items.id, id)).returning();
+
+
     } catch (error) {
         
     }
