@@ -1,6 +1,7 @@
 import { db } from '../db/index.js';
 import { items } from '../models/catalogue.model.js';
 import { eq } from 'drizzle-orm';
+import { deleteFile } from '../utils/helper.js';
 
 export const createItems = async ( req,res,next ) => {
     try {
@@ -29,6 +30,10 @@ export const updateItems = async ( req,res,next ) => {
         if ( data.title !==undefined) updates.title=data.title;
         if ( data.category !==undefined) updates.category=data.category;
         if ( data.description !==undefined) updates.description=data.description;
+        if ( req.files?.mediaFile[0] ) {
+            deleteFile(existing.mediaFile)
+            updates.mediaFile = buildRelativePath(req.files.mediaFile[0])
+        }
 
         const [updated] = await db.update(items).set(updates).where(eq(items.id, id)).returning();
 
