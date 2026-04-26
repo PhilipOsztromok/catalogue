@@ -4,7 +4,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import "dotenv-config";
+import "dotenv/config";
 import itemRouter from './src/routes/catalougue.routes.js';
 
 const app = express();

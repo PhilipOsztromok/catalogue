@@ -1,8 +1,9 @@
 import express from 'express';
+import { updateItems } from '../controller/catalogue.controller.js';
 
 const router = express.Router();
 
-router.post("/api/item", uploadFiles);
+router.post("/upload", updateItems);
 
 
 export default router;

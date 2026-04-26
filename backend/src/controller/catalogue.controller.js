@@ -1,6 +1,6 @@
 import { db } from '../db/index.js';
 import { items } from '../models/catalogue.model.js';
-import { eq } from 'drizzle-orm';
+import { eq, ilike } from 'drizzle-orm';
 import { deleteFile } from '../utils/helper.js';
 
 export const createItems = async ( req,res,next ) => {
@@ -39,6 +39,30 @@ export const updateItems = async ( req,res,next ) => {
 
 
     } catch (error) {
+        next(error);
+    }
+
+}
+
+export const getAllItems = async ( req,res, next ) => {
+    try {
         
+        const { category, search } = req.query;
+        // const search = req.category.search;
+        let results = [];
+        if (category && category !== "All" ) {
+            results.push(eq(items.category, category))
+        }
+
+        if (search) {
+            results.push(or 
+                (ilike(items.title,`%${ search }%`)),
+                (ilike(items.description,`%${ search }%`)),
+                (ilike(items.genre,`%${ search }%`)),
+            );
+        }
+
+    } catch (error) {
+        next(error);
     }
 }
