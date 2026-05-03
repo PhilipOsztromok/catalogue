@@ -1,7 +1,7 @@
 import { db } from '../db/index.js';
 import { items } from '../models/catalogue.model.js';
 import { eq, ilike } from 'drizzle-orm';
-import { deleteFile } from '../utils/helper.js';
+import { deleteFile, parseTags, serializeTags } from '../utils/helper.js';
 
 export const createItems = async ( req,res,next ) => {
     try {
@@ -10,6 +10,7 @@ export const createItems = async ( req,res,next ) => {
             title: data.title,
             category: data.category,
             description: data.description || '',
+            tags: serializeTags(parseTags(data.tags))
          }
     const [ created ] = await db.insert(items).values(newItem).returning()
 
@@ -32,9 +33,10 @@ export const updateItems = async ( req,res,next ) => {
         if ( data.description !==undefined) updates.description=data.description;
         if ( req.files?.mediaFile[0] ) {
             deleteFile(existing.mediaFile)
-            updates.mediaFile = buildRelativePath(req.files.mediaFile[0])
+            updates.mediaFile = buildRelativePath(req.files.mediaFile[0]);
         }
-
+        if (data.tags !== undefined) update.tags = serializeTags(parseTags(data.tags));
+    
         const [updated] = await db.update(items).set(updates).where(eq(items.id, id)).returning();
 
 
