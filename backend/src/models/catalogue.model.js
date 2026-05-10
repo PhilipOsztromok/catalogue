@@ -14,17 +14,30 @@ const catalogueSchema = new mongoose.Schema( {
 const catalogue = mongoose.model("item", catalogueSchema); */
 
 import { timestamp } from "drizzle-orm/gel-core";
-import { pgTable, varchar, uuid } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  text,
+  varchar,
+  integer,
+  numeric
+} from "drizzle-orm/pg-core";
 
-const items = pgTable("items", { 
-    id: uuid().primaryKey(),
-    title: varchar( { length: 100 } ),
-    description: text().default(" "),
-    category: varchar( { length: 45 } ).notNull(),
-    tags: text().default("[]"),
-    filepath: text().default(""),
-    addedAt: timestamp().defaultNow(),
-    updatedAt: timestamp().defaultNow(),
-})
+export const items = pgTable("items", {
+   id:          serial('id').primaryKey(),
+  title:       varchar('title', { length: 255 }).notNull(),
+  category:    varchar('category', { length: 100 }).notNull(),
+  description: text('description').default(''),
+  tags:        text('tags').default('[]'),          
+  mediaFile:   text('media_file').default(''),
+  coverImage:  text('cover_image').default(''),
+  duration:    varchar('duration', { length: 50 }).default(''),
+  year:        integer('year'),
+  rating:      numeric('rating', { precision: 3, scale: 1 }),
+  genre:       varchar('genre', { length: 100 }).default(''),
+  language:    varchar('language', { length: 100 }).default(''),
 
-export default items;
+  addedAt:     timestamp('added_at').defaultNow(),
+  updatedAt:   timestamp('updated_at').defaultNow(),
+});
+ 

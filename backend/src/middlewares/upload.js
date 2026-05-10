@@ -1,59 +1,35 @@
-import mongoose from 'mongoose';
-import cors from 'cors';
-import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import "dotenv-config";
-import itemRouter from './src/routes/catalougue.routes.js';
+import { UPLOAD_DIR } from '../utils/helper.js';
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-const port = 3000;
-app.listen(3000, () => { console.log(`Server is listening on port ${port}.`) });
-
-mongoose.connect(process.env.DATABASE_URL,
-    { useNewUrlParser: true, useUnifiedTopology: true }
-).then(() =>
-    console.log('✅ MongoDB connected'))
-    .catch
-    (err => { console.error('❌ MongoDB error:', err); process.exit(1); }
-    );
-
-app.use("/uploads", itemRouter);
-
-export const upload = path.join("_dirname", "uploads");
-["dvds", "books", "cds", "pdfs", "mp3s"].forEach(
-    (element) => {
-        fs.mkdirSync(path.join(upload, element));
-    }, {
-    recursive: true
-}
-);
-
-// multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const cat = (req.body.category || "others").tolowercase();
-        if (["dvds", "video", "mp4", "bluray"].includes(cat))
-            folder = "dvds";
-        else if (["pdf", "books", "ebook"].includes(cat))
-            folder = "books";
-        else if (["image", "photo", "jpeg", "raw"].includes(cat))
-            folder = "images";
-        cb(null, path.join(upload, folder));
-    },
-    filename: (req, file, cb) => {
-        const unique = Date.now() + "-" + Math.random() * 10000;
-        cb(null, unique + path.extname(file.originalname()));
-    },
+['dvds', 'books', 'images', 'others'].forEach(folder => {
+  fs.mkdirSync(path.join(UPLOAD_DIR, folder), { recursive: true });
 });
 
-const uploadSize = multer({ storage, limits: { filesize: 5 * 1024 * 1024 * 1024 } });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const cat = (req.body.category || 'others').toLowerCase();
+    let folder = 'others';
+    if (['dvd', 'blu-ray', 'video'].includes(cat)) folder = 'dvds';
+    else if (['book', 'pdf', 'ebook'].includes(cat)) folder = 'books';
+    else if (['image', 'photo'].includes(cat)) folder = 'images';
+    cb(null, path.join(UPLOAD_DIR, folder));
+  },
+  filename: (req, file, cb) => {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, unique + path.extname(file.originalname));
+  },
+});
 
-function multerError(error, req, resp, next) {
-    if (error instanceof multer.MulterError) { return resp.status(400).json({ error: error.message }) }
-    next(error)
+export const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 * 1024 },
+});
+
+export function handleMulterError(err, req, res, next) {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: `Upload error: ${err.message}` });
+  }
+  next(err);
 }

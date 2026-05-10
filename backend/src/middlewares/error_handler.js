@@ -1,12 +1,11 @@
-function errorHandler(req,resp,error,next){
+export function errorHandler(err, req, res, next) {
+  console.error('Unhandled error:', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    error: err.message || 'Internal server error',
+  });
+}
 
-    const status = error.statusCode || 500;
-    resp.status(status).json( {error : error.message || "Internal server error"} )
-
-};
-
-function notFound(req,resp,next){
-
-    resp.status(404).json( {error : `Route ${req.path} not found`} )
-
-};
+export function notFound(req, res) {
+  res.status(404).json({ error: `Route ${req.method} ${req.path} not found` });
+}
