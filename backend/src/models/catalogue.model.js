@@ -40,22 +40,22 @@ export const items = pgTable("items", {
 
 export const book_details = pgTable("book_details", {
    id:          serial('id').primaryKey(),
-   book_id:     integer().references( () => items.id ).notNull.unique,
-   author:      varchar().notNull,
-   isbn_code:   varchar(),
-   pages:       integer
+   book_id:     integer().references(() => items.id ).notNull().unique(),
+   author:      varchar("Name").notNull(),
+   isbn_code:   varchar("ISBN"),
+   pages:       integer("Pages")
 });
 
-export const cd_details = pgTable("book_details", {
+export const cd_details = pgTable("cd_details", {
    id:          serial('id').primaryKey(),
-   cd_id:     integer().references( () => items.id ).notNull.unique,
-   artist:      varchar().notNull,
+   cd_id:       integer().references(() => items.id ).notNull().unique(),
+   artist:      varchar().notNull(),
    
 });
 
-export const dvd_details = pgTable("book_details", {
+export const dvd_details = pgTable("dvd_details", {
    id:          serial('id').primaryKey(),
-   dvd_id:     integer().references( () => items.id ).notNull.unique,
+   dvd_id:      integer().references(() => items.id ).notNull().unique(),
    year:        integer(),
    type:        varchar()  // dvd or bluray!
 });
