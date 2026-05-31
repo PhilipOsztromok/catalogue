@@ -17,7 +17,7 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 
 app.use('/api/items', itemRouter);
 
-app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
+app.get('/', (_, res) => res.json({ status: 'ok' }));
 
 app.use(notFound);
 app.use(errorHandler);

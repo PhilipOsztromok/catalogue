@@ -13,14 +13,15 @@ const catalogueSchema = new mongoose.Schema( {
 
 const catalogue = mongoose.model("item", catalogueSchema); */
 
-import { timestamp } from "drizzle-orm/gel-core";
+// import { timestamp } from "drizzle-orm/gel-core";
 import {
   pgTable,
   serial,
   text,
   varchar,
   integer,
-  numeric
+  numeric,
+  timestamp
 } from "drizzle-orm/pg-core";
 
 export const items = pgTable("items", {
@@ -31,13 +32,30 @@ export const items = pgTable("items", {
   tags:        text('tags').default('[]'),          
   mediaFile:   text('media_file').default(''),
   coverImage:  text('cover_image').default(''),
-  duration:    varchar('duration', { length: 50 }).default(''),
-  year:        integer('year'),
-  rating:      numeric('rating', { precision: 3, scale: 1 }),
-  genre:       varchar('genre', { length: 100 }).default(''),
   language:    varchar('language', { length: 100 }).default(''),
 
   addedAt:     timestamp('added_at').defaultNow(),
   updatedAt:   timestamp('updated_at').defaultNow(),
 });
- 
+
+export const book_details = pgTable("book_details", {
+   id:          serial('id').primaryKey(),
+   book_id:     integer().references( () => items.id ).notNull.unique,
+   author:      varchar().notNull,
+   isbn_code:   varchar(),
+   pages:       integer
+});
+
+export const cd_details = pgTable("book_details", {
+   id:          serial('id').primaryKey(),
+   cd_id:     integer().references( () => items.id ).notNull.unique,
+   artist:      varchar().notNull,
+   
+});
+
+export const dvd_details = pgTable("book_details", {
+   id:          serial('id').primaryKey(),
+   dvd_id:     integer().references( () => items.id ).notNull.unique,
+   year:        integer(),
+   type:        varchar()  // dvd or bluray!
+});
