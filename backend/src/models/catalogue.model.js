@@ -25,15 +25,19 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const items = pgTable("items", {
-   id:          serial('id').primaryKey(),
+  id:          serial('id').primaryKey(),
   title:       varchar('title', { length: 255 }).notNull(),
   category:    varchar('category', { length: 100 }).notNull(),
   description: text('description').default(''),
-  tags:        text('tags').default('[]'),          
+  tags:        text('tags').default('[]'),
+  genre:       varchar('genre', { length: 150 }).default(''),
+  author:      varchar('author', { length: 255 }).default(''),
+  year:        integer('year'),
+  duration:    varchar('duration', { length: 50 }).default(''),
+  rating:      numeric('rating', { precision: 4, scale: 1 }),
   mediaFile:   text('media_file').default(''),
   coverImage:  text('cover_image').default(''),
   language:    varchar('language', { length: 100 }).default(''),
-
   addedAt:     timestamp('added_at').defaultNow(),
   updatedAt:   timestamp('updated_at').defaultNow(),
 });

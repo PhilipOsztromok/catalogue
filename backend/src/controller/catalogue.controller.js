@@ -18,10 +18,11 @@ export const createItem = async (req, res, next) => {
       category: data.category,
       description: data.description || "",
       tags: serializeTags(parseTags(data.tags)),
+      genre: data.genre || "",
+      author: data.author || "",
       duration: data.duration || "",
       year: data.year ? parseInt(data.year, 10) : null,
       rating: data.rating != null ? parseFloat(data.rating) : null,
-      genre: data.genre || "",
       language: data.language || "",
       mediaFile: req.files?.mediaFile?.[0]
         ? buildRelativePath(req.files.mediaFile[0])
@@ -59,12 +60,13 @@ export const updateItem = async (req, res, next) => {
     if (data.description !== undefined) updates.description = data.description;
     if (data.tags !== undefined)
       updates.tags = serializeTags(parseTags(data.tags));
+    if (data.genre !== undefined) updates.genre = data.genre;
+    if (data.author !== undefined) updates.author = data.author;
     if (data.duration !== undefined) updates.duration = data.duration;
     if (data.year !== undefined)
       updates.year = data.year ? parseInt(data.year, 10) : null;
     if (data.rating !== undefined)
       updates.rating = data.rating != null ? parseFloat(data.rating) : null;
-    if (data.genre !== undefined) updates.genre = data.genre;
     if (data.language !== undefined) updates.language = data.language;
 
     if (req.files?.mediaFile?.[0]) {
